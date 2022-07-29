@@ -46,26 +46,37 @@ FOG_Trig_all=struct2table(FOG_Trig_all);
 FOG_Type_all=struct2table(FOG_Type_all);
 
 %% general variables of FOG events
-total_number_FOG=height(FOG_Trig_all)
-median_duration_FOG=median(FOG_Trig_all.duration_sec) % in seconds
-iqr_duration_FOG=prctile(FOG_Trig_all.duration_sec, [25 75])
-min_duration_FOG=min(FOG_Trig_all.duration_sec)
-max_duration_FOG=max(FOG_Trig_all.duration_sec)
+% exclude sub-5:
+FOG_Trig_all = FOG_Trig_all(~strcmp(FOG_Trig_all.ID, '5'),:);
+FOG_Type_all = FOG_Type_all(~strcmp(FOG_Type_all.ID, '5'),:);
+
+% exclude sub-8
+FOG_Trig_incl = FOG_Trig_all(~strcmp(FOG_Trig_all.ID, '8'),:);
+total_number_FOG=height(FOG_Trig_incl)
+median_duration_FOG=median(FOG_Trig_incl.duration_sec) % in seconds
+iqr_duration_FOG=prctile(FOG_Trig_incl.duration_sec, [25 75])
+min_duration_FOG=min(FOG_Trig_incl.duration_sec)
+max_duration_FOG=max(FOG_Trig_incl.duration_sec)
+
+% sub-8
+height(FOG_Trig_all(strcmp(FOG_Trig_all.ID, '8'),:))
+median(FOG_Trig_all.duration_sec(strcmp(FOG_Trig_all.ID, '8')))
+prctile(FOG_Trig_all.duration_sec(strcmp(FOG_Trig_all.ID, '8')), [25 75])
 
 %% boxplots of FOG durations
-figure; boxplot(FOG_Trig_all.duration_sec, FOG_Trig_all.ID, 'PlotStyle', 'traditional', 'Colors','k', 'Symbol', 'k.', 'DataLim',[0 75], 'width', 0.8)
+figure; boxplot([FOG_Trig_all.duration_sec; nan], [FOG_Trig_all.ID; {'05'}], 'PlotStyle', 'traditional', 'Colors','k', 'Symbol', 'k.', 'DataLim',[0 75], 'width', 0.8)
  xlabel('participant'); ylabel('FOG duration (s)')
  title('FOG duration by participant')
  set(gca, 'Fontsize', 40);
  set(findobj(gca,'type','line'),'linew',3)
-saveas(gcf, fullfile(fig_dir, 'FOG_variables','FOGduration_byPatient.eps'))
+% saveas(gcf, fullfile(fig_dir, 'FOG_variables','FOGduration_byPatient.eps'))
 
 %% bar charts showing differences between each patient
 % by trigger
 load('sub.mat')
-nmb_trig=nan(16,4); 
-IDshort=arrayfun(@(x) sprintf('%d',x), [1:16], 'UniformOutput', false);
-for i=1:16
+nmb_trig=nan(15,4); 
+IDshort=arrayfun(@(x) sprintf('%d',x), [1:4 6:16], 'UniformOutput', false);
+for i=1:15
   idx_turn= find(strcmp(FOG_Trig_all.ID, IDshort(i)) & contains(FOG_Trig_all.value, {'360', '180'}));
   idx_door=find(strcmp(FOG_Trig_all.ID, IDshort(i)) & contains(FOG_Trig_all.value, 'Doorway'));
   idx_sh=find(strcmp(FOG_Trig_all.ID, IDshort(i)) & contains(FOG_Trig_all.value, 'SH'));
@@ -77,18 +88,18 @@ for i=1:16
 end
 % plot
 figure;
-bar(nmb_trig, 'stacked'); % or: bar(nmb_trig);
-ylim([0 100]); xticks([1:16]);
+bar([1:4 6:16], nmb_trig, 'stacked'); % or: bar(nmb_trig);
+ylim([0 100]); %xticks([1:4 6:16]);
 xlabel('participant'); ylabel('number of FOG')
 legend({'FOG turn', 'FOG narrow passage','FOG starting hesitation', 'FOG others'}, 'Location', 'north', 'orientation', 'horizontal', 'FontSize', 30)
 title('FOG events by participant and by trigger')
 set(gca, 'Fontsize', 40);
-saveas(gcf, fullfile(fig_dir, 'FOG_variables','NumberFOGs_byPatient_byTrigger.jpg'))
-sum(nmb_trig)/total_number_FOG*100
+% saveas(gcf, fullfile(fig_dir, 'FOG_variables','NumberFOGs_byPatient_byTrigger.jpg'))
+sum(nmb_trig([1:6 8:end], :))/total_number_FOG*100 %excluding sub-8
 
 % by type
-nmb_type=nan(16,3); 
-for i=1:16
+nmb_type=nan(15,3); 
+for i=1:15
   idx_tremb= find(strcmp(FOG_Trig_all.ID, IDshort(i)) & strcmp(FOG_Type_all.value, 'Trembling'));
   idx_akin=find(strcmp(FOG_Trig_all.ID, IDshort(i)) & strcmp(FOG_Type_all.value, 'Akinesia'));
   idx_shuf=find(strcmp(FOG_Trig_all.ID, IDshort(i)) & strcmp(FOG_Type_all.value, 'Shuffling'));
@@ -98,18 +109,18 @@ for i=1:16
 end
 % plot
 figure;
-bar(nmb_type, 'stacked'); % or: bar(nmb_trig);
-ylim([0 100]); xticks([1:16]);
+bar([1:4 6:16], nmb_type, 'stacked'); % or: bar(nmb_trig);
+ylim([0 100]); xticks([1:4 6:16]);
 xlabel('participant'); ylabel('number of FOG')
 legend({'trembling', 'akinesia','shuffling'},'Location', 'north', 'orientation', 'horizontal', 'FontSize', 30)
 title('FOG events by participant and by type')
 set(gca, 'Fontsize', 40);
-saveas(gcf, fullfile(fig_dir, 'FOG_variables','NumberFOGs_byPatient_byType.jpg'))
-sum(nmb_type)/total_number_FOG*100
+% saveas(gcf, fullfile(fig_dir, 'FOG_variables','NumberFOGs_byPatient_byType.jpg'))
+sum(nmb_type([1:6 8:end],:))/total_number_FOG*100 % excluding sub-08
 
 % by DT
-nmb_DT=nan(16,3);
-for i=1:16
+nmb_DT=nan(15,3);
+for i=1:15
   idx_nDT= find(strcmp(FOG_Trig_all.ID, IDshort(i)) & contains(FOG_Trig_all.DT, 'nDT'));
   idx_cDT=find(strcmp(FOG_Trig_all.ID, IDshort(i)) & contains(FOG_Trig_all.DT, 'cDT'));
   idx_mDT=find(strcmp(FOG_Trig_all.ID, IDshort(i)) & contains(FOG_Trig_all.DT, 'mDT'));
@@ -119,12 +130,12 @@ for i=1:16
 end
 % plot
 figure;
-bar(nmb_DT, 'stacked'); % or: bar(nmb_trig);
-ylim([0 100]); xticks([1:16]);
+bar([1:4 6:16], nmb_DT, 'stacked'); % or: bar(nmb_trig);
+ylim([0 100]); xticks([1:4 6:16]);
 xlabel('participant'); ylabel('number of FOG')
 legend({'noDT', 'cDT', 'mDT'},'Location', 'north', 'orientation', 'horizontal', 'FontSize', 30)
 title('FOG events by participant and by DT')
 set(gca, 'Fontsize', 40);
-saveas(gcf, fullfile(fig_dir, 'FOG_variables','NumberFOGs_byPatient_byDT.jpg'))
-sum(nmb_DT)/total_number_FOG*100
+% saveas(gcf, fullfile(fig_dir, 'FOG_variables','NumberFOGs_byPatient_byDT.jpg'))
+sum(nmb_DT([1:6 8:end],:))/total_number_FOG*100 % excluding sub-08
 

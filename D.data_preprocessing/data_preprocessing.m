@@ -25,6 +25,7 @@ for i=subjects
     load(fullfile(id_folder, 'run.mat'));
     [HR(i), HRV(i)]=heartraterest(run);
 end  
+HR = HR([1:4 6:end]); HRV = HRV([1:4 6:end]); % exclude participant 5
 fprintf('The median heart rate during rest was %f (range %f - %f) \n', nanmedian(HR), min(HR), max(HR))
 fprintf('The median heart rate variability during rest was %f (range %f - %f) \n', nanmedian(HRV), min(HRV), max(HRV))
 quantile(HR, [0.25 0.75])

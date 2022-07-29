@@ -105,7 +105,6 @@ if vis
     b=plotCI(condStop_GA, var, length(subjects), [0.13333  0.44314  0.69804]); 
     a=plotCI(condFOG_GA, var, length(subjects), [0.83529  0.36863  0]); 
 
-
     ft_plot_text(-4.5, y_lim(2)-0.1*y_lim(2), 'baseline', 'fontsize',20);
     ft_plot_text(-1.5, y_lim(2)-0.1*y_lim(2), 'preFOG', 'fontsize',20);
     ft_plot_text(1.5, y_lim(2)-0.1*y_lim(2), 'FOG', 'fontsize',20);

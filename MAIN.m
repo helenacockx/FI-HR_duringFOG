@@ -45,13 +45,13 @@ end
 
 %% F. TIMELOCK ANALYSIS
 close all
-subjects=[1:4 6:16];
-conditions={'all'}; 
-variables={'heartrate'};
+subjects=[1:4 6 7 9:16];
+conditions={'akinesia'}; 
+variables={'motorband_R', 'freezeband_R'};
 for c=1:length(conditions)
   clear condFOG condStop condTrig
-  [condFOG, condStop, condTrig]=timelockCond(proc_dir, subjects, conditions{c}, variables, 'vis',1, 'save_fig', 1, 'baseline', [-6 -3]);
-  grandaverageCond(condFOG, condStop, condTrig, subjects, conditions{c}, variables, 'save_fig', 1, 'baseline', [-6 -3]);
+  [condFOG, condStop, condTrig]=timelockCond(proc_dir, subjects, conditions{c}, variables, 'vis', 1, 'save_fig', 0, 'baseline', [-6 -3]);
+  grandaverageCond(condFOG, condStop, condTrig, subjects, conditions{c}, variables, 'save_fig', 0, 'baseline', [-6 -3]);
 end
 
 %% E. STATISTICS

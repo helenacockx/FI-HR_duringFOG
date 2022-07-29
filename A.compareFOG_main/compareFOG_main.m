@@ -55,6 +55,9 @@ for i=subjects
 end
 % save('sub.mat', 'sub')
 
+% exclude sub-5 and sub-8
+sub = sub([1:4 6 7 9:16]);
+
 % plot kappa coefficient
 figure; plot([sub.kappa]);
 title('Cohens kappa coefficient over patients'); 
@@ -63,12 +66,12 @@ meankappa=mean([sub.kappa]);
 display(meankappa)
 
 % calculate Spearman's correlation
-[correlation] = HC_spearman(sub);
+[correlation] = spearman(sub);
 display(correlation)
 
 %% calculate disagreement between trembling shuffling
 disagree=0; n=0;
-for i=1:16
+for i=1:14
   x=sum(sub(i).FOG_events.combined.agreement & contains(sub(i).FOG_events.combined.FOG_Type, 'Shuffling') & contains(sub(i).FOG_events.combined.FOG_Type, 'Trembling'));
   y=sum(sub(i).FOG_events.combined.agreement & contains(sub(i).FOG_events.combined.FOG_Type, 'Shuffling') & contains(sub(i).FOG_events.combined.FOG_Type, 'Akinesia'));
   disagree=disagree+x;
